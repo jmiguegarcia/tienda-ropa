@@ -48,6 +48,7 @@ Abre `http://localhost:4200`.
 | GET    | `/api/productos`      | Lista productos (filtro opcional `?categoria=<id>`) |
 | GET    | `/api/productos/:id`  | Producto con sus variantes (corte, talla, color, stock, precio) |
 | GET    | `/api/categorias`     | Lista de categorías                                |
+| POST   | `/api/solicitudes`    | Solicitud de personalizado para contactar por WhatsApp |
 
 ## Hoja de ruta
 
