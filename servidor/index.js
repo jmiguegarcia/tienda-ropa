@@ -7,6 +7,13 @@ const initDB = require('./init-db');
 const productosRutas = require('./rutas/productos');
 const categoriasRutas = require('./rutas/categorias');
 const solicitudesRutas = require('./rutas/solicitudes');
+const authRutas = require('./rutas/auth');
+
+// Sin secreto los tokens de sesión no se pueden firmar: mejor no arrancar
+if (!process.env.JWT_SECRET || process.env.JWT_SECRET.length < 32) {
+  console.error('Falta JWT_SECRET en servidor/.env (mínimo 32 caracteres). Mira .env.example.');
+  process.exit(1);
+}
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -18,6 +25,7 @@ app.use(express.json());
 app.use('/api/productos', productosRutas);
 app.use('/api/categorias', categoriasRutas);
 app.use('/api/solicitudes', solicitudesRutas);
+app.use('/api/auth', authRutas);
 
 // Ruta base informativa
 app.get('/api', (req, res) => {
