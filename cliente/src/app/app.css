@@ -25,6 +25,51 @@
   fill: var(--marca);
 }
 
+.acciones {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.saludo {
+  max-width: 10rem;
+  overflow: hidden;
+  color: #d9d2ec;
+  font-size: 0.9rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 480px) {
+  .hola {
+    display: none;
+  }
+}
+
+.sesion {
+  padding: 0.45rem 0.9rem;
+  border: 1px solid rgb(255 255 255 / 0.25);
+  border-radius: 999px;
+  background: none;
+  color: #fff;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.sesion:hover {
+  border-color: var(--marca);
+  background: rgb(255 255 255 / 0.08);
+}
+
+.sesion:focus-visible {
+  outline: 2px solid var(--marca);
+  outline-offset: 2px;
+}
+
 .ir-carrito {
   position: relative;
   display: grid;

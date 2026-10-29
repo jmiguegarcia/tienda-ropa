@@ -7,19 +7,30 @@
     All Style
   </a>
 
-  <a
-    class="ir-carrito"
-    routerLink="/carrito"
-    [attr.aria-label]="'Carrito, ' + carrito.unidades() + (carrito.unidades() === 1 ? ' producto' : ' productos')"
-  >
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M6 7h12l-1 13H7L6 7Z" />
-      <path d="M9 7a3 3 0 0 1 6 0" />
-    </svg>
-    @if (carrito.unidades() > 0) {
-      <span class="contador" aria-hidden="true">{{ carrito.unidades() }}</span>
+  <nav class="acciones" aria-label="Cuenta y carrito">
+    @if (auth.usuario(); as usuario) {
+      <span class="saludo" [attr.title]="usuario.email">
+        <span class="hola">Hola, </span>{{ primerNombre(usuario.nombre) }}
+      </span>
+      <button type="button" class="sesion" (click)="salir()">Salir</button>
+    } @else {
+      <a class="sesion" routerLink="/entrar" [queryParams]="{ volver: urlActual() }">Entrar</a>
     }
-  </a>
+
+    <a
+      class="ir-carrito"
+      routerLink="/carrito"
+      [attr.aria-label]="'Carrito, ' + carrito.unidades() + (carrito.unidades() === 1 ? ' producto' : ' productos')"
+    >
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M6 7h12l-1 13H7L6 7Z" />
+        <path d="M9 7a3 3 0 0 1 6 0" />
+      </svg>
+      @if (carrito.unidades() > 0) {
+        <span class="contador" aria-hidden="true">{{ carrito.unidades() }}</span>
+      }
+    </a>
+  </nav>
 </header>
 
 <main class="contenido">
