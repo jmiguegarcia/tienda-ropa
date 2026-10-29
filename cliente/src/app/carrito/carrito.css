@@ -1,0 +1,248 @@
+h1 {
+  margin: 0 0 1.5rem;
+  font-size: clamp(1.75rem, 4vw, 2.25rem);
+}
+
+.vacio {
+  padding: 3rem 1.5rem;
+  border: 1px dashed var(--borde);
+  border-radius: 20px;
+  background: var(--superficie);
+  color: var(--texto-suave);
+  text-align: center;
+}
+
+.vacio p {
+  margin: 0 0 1.25rem;
+  font-size: 1.1rem;
+}
+
+.boton {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  border-radius: 999px;
+  background: var(--noche);
+  color: #fff;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.boton:hover {
+  background: var(--marca-fuerte);
+}
+
+.contenido {
+  display: grid;
+  gap: 2rem;
+  align-items: start;
+}
+
+@media (min-width: 900px) {
+  .contenido {
+    grid-template-columns: 1fr 320px;
+  }
+}
+
+.lineas {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.linea {
+  display: grid;
+  grid-template-columns: 4.5rem 1fr auto;
+  grid-template-areas:
+    'miniatura datos subtotal'
+    'miniatura cantidad quitar';
+  gap: 0.75rem 1rem;
+  align-items: center;
+  padding: 1rem;
+  border: 1px solid var(--borde);
+  border-radius: 16px;
+  background: var(--superficie);
+}
+
+@media (min-width: 640px) {
+  .linea {
+    grid-template-columns: 4.5rem 1fr auto auto auto;
+    grid-template-areas: 'miniatura datos cantidad subtotal quitar';
+  }
+}
+
+.miniatura {
+  grid-area: miniatura;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 4 / 5;
+  border-radius: 10px;
+  background: linear-gradient(160deg, var(--marca-suave), #d9c8f7);
+  color: var(--marca-fuerte);
+  font-family: var(--fuente-titulos);
+  font-size: 1.75rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.datos {
+  grid-area: datos;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.nombre {
+  color: var(--texto);
+  font-family: var(--fuente-titulos);
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.nombre:hover {
+  color: var(--marca-fuerte);
+}
+
+.detalle,
+.unitario {
+  color: var(--texto-suave);
+  font-size: 0.875rem;
+}
+
+.cantidad {
+  grid-area: cantidad;
+  display: inline-flex;
+  align-items: center;
+  justify-self: start;
+  border: 1px solid var(--borde);
+  border-radius: 999px;
+}
+
+.cantidad button {
+  width: 2.25rem;
+  height: 2.25rem;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--texto);
+  font: inherit;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.cantidad button:hover:not(:disabled) {
+  background: var(--marca-suave);
+}
+
+.cantidad button:disabled {
+  cursor: not-allowed;
+  opacity: 0.35;
+}
+
+.cantidad span {
+  min-width: 1.75rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.subtotal {
+  grid-area: subtotal;
+  justify-self: end;
+  font-weight: 700;
+}
+
+.quitar {
+  grid-area: quitar;
+  justify-self: end;
+  padding: 0.25rem 0;
+  border: 0;
+  background: none;
+  color: var(--texto-suave);
+  font: inherit;
+  font-size: 0.875rem;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.quitar:hover {
+  color: var(--error);
+}
+
+.resumen {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.5rem;
+  border-radius: 20px;
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+}
+
+@media (min-width: 900px) {
+  .resumen {
+    position: sticky;
+    top: 1.5rem;
+  }
+}
+
+.resumen h2 {
+  margin: 0 0 0.25rem;
+  font-size: 1.35rem;
+}
+
+.fila {
+  display: flex;
+  justify-content: space-between;
+  color: var(--texto-suave);
+}
+
+.fila.total {
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--borde);
+  color: var(--texto);
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.finalizar {
+  margin-top: 0.5rem;
+  padding: 0.9rem 1.5rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--noche);
+  color: #fff;
+  font: inherit;
+  font-weight: 700;
+}
+
+.finalizar:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.nota {
+  margin: 0;
+  color: var(--texto-suave);
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+.seguir {
+  color: var(--marca-fuerte);
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
+}
+
+.seguir:hover {
+  text-decoration: underline;
+}
+
+button:focus-visible {
+  outline: 2px solid var(--marca);
+  outline-offset: 2px;
+}

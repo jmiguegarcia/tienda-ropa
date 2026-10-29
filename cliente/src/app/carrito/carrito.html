@@ -1,0 +1,67 @@
+<h1>Tu carrito</h1>
+
+@if (carrito.lineas().length === 0) {
+  <div class="vacio">
+    <p>Tu carrito está vacío.</p>
+    <a class="boton" routerLink="/">Ver el catálogo</a>
+  </div>
+} @else {
+  <div class="contenido">
+    <ul class="lineas">
+      @for (l of carrito.lineas(); track l.varianteId) {
+        <li class="linea">
+          <a class="miniatura" [routerLink]="['/producto', l.productoId]" aria-hidden="true" tabindex="-1">
+            {{ l.nombre.charAt(0) }}
+          </a>
+
+          <div class="datos">
+            <a class="nombre" [routerLink]="['/producto', l.productoId]">{{ l.nombre }}</a>
+            <span class="detalle">{{ detalle(l) }}</span>
+            <span class="unitario">{{ l.precio | currency: 'COP' : 'symbol-narrow' : '1.0-0' }} c/u</span>
+          </div>
+
+          <div class="cantidad" role="group" [attr.aria-label]="'Cantidad de ' + l.nombre">
+            <button
+              type="button"
+              (click)="carrito.cambiarCantidad(l.varianteId, l.cantidad - 1)"
+              [attr.aria-label]="l.cantidad === 1 ? 'Quitar del carrito' : 'Quitar una unidad'"
+            >
+              −
+            </button>
+            <span aria-live="polite">{{ l.cantidad }}</span>
+            <button
+              type="button"
+              (click)="carrito.cambiarCantidad(l.varianteId, l.cantidad + 1)"
+              [disabled]="l.cantidad >= l.stock"
+              [attr.title]="l.cantidad >= l.stock ? 'No hay más unidades disponibles' : null"
+              aria-label="Añadir una unidad"
+            >
+              +
+            </button>
+          </div>
+
+          <span class="subtotal">
+            {{ l.precio * l.cantidad | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}
+          </span>
+
+          <button type="button" class="quitar" (click)="carrito.quitar(l.varianteId)">Quitar</button>
+        </li>
+      }
+    </ul>
+
+    <aside class="resumen">
+      <h2>Resumen</h2>
+      <div class="fila">
+        <span>Productos ({{ carrito.unidades() }})</span>
+        <span>{{ carrito.total() | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</span>
+      </div>
+      <div class="fila total">
+        <span>Total</span>
+        <span>{{ carrito.total() | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</span>
+      </div>
+      <button type="button" class="finalizar" disabled>Finalizar compra</button>
+      <p class="nota">El pago en línea estará disponible muy pronto.</p>
+      <a class="seguir" routerLink="/">← Seguir comprando</a>
+    </aside>
+  </div>
+}
