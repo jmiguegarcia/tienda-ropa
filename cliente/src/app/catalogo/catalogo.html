@@ -1,0 +1,53 @@
+<section class="catalogo">
+  <h1>Catálogo</h1>
+
+  <nav class="filtros" aria-label="Filtrar por categoría">
+    <a
+      class="filtro"
+      routerLink="/"
+      [class.activo]="!categoria()"
+      [attr.aria-current]="!categoria() ? 'page' : null"
+      >Todo</a
+    >
+    @for (c of categorias.value(); track c.id) {
+      <a
+        class="filtro"
+        routerLink="/"
+        [queryParams]="{ categoria: c.id }"
+        [class.activo]="categoria() === c.id"
+        [attr.aria-current]="categoria() === c.id ? 'page' : null"
+        >{{ c.nombre }}</a
+      >
+    }
+  </nav>
+
+  @if (productos.error()) {
+    <p class="aviso error">No se pudo cargar el catálogo. ¿Está arrancado el servidor?</p>
+  } @else if (productos.isLoading() && productos.value().length === 0) {
+    <p class="aviso">Cargando productos…</p>
+  } @else {
+    <ul class="rejilla" [class.recargando]="productos.isLoading()">
+      @for (p of productos.value(); track p.id) {
+        <li class="tarjeta">
+          <div class="imagen">
+            @if (p.imagen_url) {
+              <img [src]="p.imagen_url" [alt]="p.nombre" />
+            } @else {
+              <span aria-hidden="true">{{ p.nombre.charAt(0) }}</span>
+            }
+          </div>
+          <div class="info">
+            @if (p.categoria) {
+              <span class="categoria">{{ p.categoria }}</span>
+            }
+            <h2>{{ p.nombre }}</h2>
+            <p class="descripcion">{{ p.descripcion }}</p>
+            <p class="precio">{{ p.precio | currency: 'EUR' }}</p>
+          </div>
+        </li>
+      } @empty {
+        <li class="aviso">No hay productos en esta categoría.</li>
+      }
+    </ul>
+  }
+</section>
