@@ -24,22 +24,24 @@ npm run init-db    # solo inicializa la BD
 
 ## API
 
-- `GET /api/productos`: lista productos (filtro opcional `?categoria=<id>`)
-- `GET /api/productos/:id`: obtiene un producto con sus variantes
+- `GET /api/productos`: lista productos con `precio_min` y `precio_max` de sus variantes (filtro opcional `?categoria=<id>`)
+- `GET /api/productos/:id`: obtiene un producto con sus variantes (cada una con su precio final)
 - `GET /api/categorias`: lista categorías
 
 ## Modelo de datos
 
 - `categorias` (id, nombre)
 - `productos` (id, nombre, descripcion, precio, categoria_id, imagen_url)
-- `variantes` (id, producto_id, talla, color, stock, sku)
+- `variantes` (id, producto_id, corte, talla, color, stock, sku, precio)
 - `usuarios` (id, nombre, email, password_hash, rol: `admin` | `cliente`)
 - `pedidos` (id, usuario_id, estado, total, fecha)
 - `pedido_items` (id, pedido_id, variante_id, cantidad, precio_unitario)
 
 Reglas:
 
-- El stock pertenece a la **variante** (talla × color), no al producto.
+- El stock pertenece a la **variante** (corte × talla × color), no al producto.
+- `variantes.corte` es opcional (las camisetas tienen Estándar, Semi-oversize y Oversize; los hoodies no tienen corte).
+- `variantes.precio` es opcional: si se indica, sustituye a `productos.precio`, que actúa como precio base ("desde").
 - `pedido_items.precio_unitario` guarda el precio del momento de la compra.
 - Los precios están en **pesos colombianos (COP)**, sin decimales en pantalla (`$ 45.000`).
 - Las operaciones que descuentan stock deben ir en una transacción.
