@@ -49,9 +49,12 @@ Abre `http://localhost:4200`.
 | GET    | `/api/productos/:id`  | Producto con sus variantes (corte, talla, color, stock, precio) |
 | GET    | `/api/categorias`     | Lista de categorías                                |
 | POST   | `/api/solicitudes`    | Solicitud de personalizado para contactar por WhatsApp |
+| POST   | `/api/auth/registro`  | Crea una cuenta de cliente y devuelve el token de sesión |
+| POST   | `/api/auth/login`     | Inicia sesión y devuelve el token                  |
+| GET    | `/api/auth/yo`        | Usuario de la sesión (`Authorization: Bearer <token>`) |
 
 ## Hoja de ruta
 
-- [ ] **Fase 1**: catálogo con filtros, ficha de producto, carrito, registro e inicio de sesión
+- [x] **Fase 1**: catálogo con filtros, ficha de producto, carrito, registro e inicio de sesión
 - [ ] **Fase 2**: checkout, pedidos con estados, pagos con Stripe (modo de prueba), historial
 - [ ] **Fase 3**: panel de administración (productos, stock, pedidos, imágenes)

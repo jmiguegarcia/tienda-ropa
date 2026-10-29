@@ -28,6 +28,9 @@ npm run init-db    # solo inicializa la BD
 - `GET /api/productos/:id`: obtiene un producto con sus variantes (cada una con su precio final)
 - `GET /api/categorias`: lista categorías
 - `POST /api/solicitudes`: guarda una solicitud de personalizado (nombre, teléfono, prenda elegida, cantidad, diseño, autorización)
+- `POST /api/auth/registro`: crea una cuenta de cliente (nombre, email, password de 8 a 72 caracteres) y devuelve `{ token, usuario }`
+- `POST /api/auth/login`: devuelve `{ token, usuario }`. Si el correo no existe responde 404 con `codigo: 'CORREO_NO_REGISTRADO'` (decisión de negocio: el cliente ofrece crear la cuenta); contraseña errónea, 401. Tras 10 fallos por IP y correo (también correos inexistentes) bloquea 15 minutos (en memoria)
+- `GET /api/auth/yo`: usuario de la sesión actual (requiere `Authorization: Bearer <token>`)
 
 ## Modelo de datos
 
@@ -55,6 +58,8 @@ Reglas:
 - Angular 22 usa standalone components.
 - Los componentes deben usar `inject()` en lugar de constructor injection.
 - En Angular 22 se busca usar signals para estado reactivo (por ejemplo, el carrito).
+- Sesión: JWT firmado con `JWT_SECRET` (7 días), guardado en el navegador (`localStorage`, clave `all-style:sesion`) y añadido a las llamadas a `/api/` por `authInterceptor`. En el servidor, `middleware/auth.js` ofrece `autenticar` y `requerirRol('admin')` para proteger rutas.
+- Las cuentas nuevas son siempre `cliente`; un `admin` se asigna a mano en la base de datos.
 - El carrito (`CarritoService`) vive en el navegador (`localStorage`, clave `all-style:carrito`) y guarda por línea el `variante_id`, el precio y el stock del momento en que se añadió. Al crear un pedido, el servidor debe volver a comprobar precio y stock.
 
 ## Flujo de Commits y Git
