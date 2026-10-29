@@ -1,0 +1,97 @@
+<a class="volver" routerLink="/">← Volver al catálogo</a>
+
+@if (producto.error()) {
+  <p class="aviso error">No encontramos este producto.</p>
+} @else if (producto.value(); as p) {
+  <article class="ficha">
+    <div class="imagen">
+      @if (p.imagen_url) {
+        <img [src]="p.imagen_url" [alt]="p.nombre" />
+      } @else {
+        <span aria-hidden="true">{{ p.nombre.charAt(0) }}</span>
+      }
+    </div>
+
+    <div class="detalle">
+      @if (p.categoria) {
+        <span class="categoria">{{ p.categoria }}</span>
+      }
+      <h1>{{ p.nombre }}</h1>
+      <p class="precio">{{ precio() | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</p>
+
+      @if (p.descripcion) {
+        <p class="descripcion">{{ p.descripcion }}</p>
+      }
+
+      @if (cortes().length > 0) {
+        <fieldset class="opcion">
+          <legend>Corte</legend>
+          <div class="botones">
+            @for (c of cortes(); track c) {
+              <button
+                type="button"
+                class="chip"
+                [class.activo]="corte() === c"
+                [attr.aria-pressed]="corte() === c"
+                (click)="corte.set(c)"
+              >
+                {{ c }}
+              </button>
+            }
+          </div>
+        </fieldset>
+      }
+
+      <fieldset class="opcion">
+        <legend>Talla</legend>
+        <div class="botones">
+          @for (t of tallas(); track t) {
+            <button
+              type="button"
+              class="chip talla"
+              [class.activo]="talla() === t"
+              [attr.aria-pressed]="talla() === t"
+              [disabled]="agotada(t)"
+              [attr.title]="agotada(t) ? 'Agotada' : null"
+              (click)="talla.set(t)"
+            >
+              {{ t }}
+            </button>
+          }
+        </div>
+      </fieldset>
+
+      <fieldset class="opcion">
+        <legend>
+          Color: <span class="elegido">{{ color() }}</span>
+        </legend>
+        <div class="botones">
+          @for (c of colores(); track c) {
+            <button
+              type="button"
+              class="muestra"
+              [class.activo]="color() === c"
+              [attr.aria-pressed]="color() === c"
+              [attr.aria-label]="c"
+              [attr.title]="c"
+              [style.background]="muestra(c)"
+              (click)="color.set(c)"
+            ></button>
+          }
+        </div>
+      </fieldset>
+
+      <button type="button" class="anadir" [disabled]="!puedeAnadir()" (click)="anadirAlCarrito()">
+        Añadir al carrito
+      </button>
+
+      @if (aviso()) {
+        <p class="nota" role="status">{{ aviso() }}</p>
+      } @else if (!talla()) {
+        <p class="nota">Elige una talla para continuar.</p>
+      }
+    </div>
+  </article>
+} @else {
+  <p class="aviso">Cargando producto…</p>
+}
