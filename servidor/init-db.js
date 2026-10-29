@@ -70,9 +70,9 @@ async function initDB() {
     const idCategoria = Object.fromEntries(categorias.rows.map((c) => [c.nombre, c.id]));
 
     const productos = [
-      ['Camiseta básica', 'Camiseta de algodón 100%', 14.99, idCategoria.Camisetas, ['Blanco', 'Negro']],
-      ['Sudadera con capucha', 'Sudadera de felpa', 34.99, idCategoria.Sudaderas, ['Gris']],
-      ['Vaquero recto', 'Pantalón vaquero de corte recto', 39.99, idCategoria.Pantalones, ['Azul']]
+      ['Camiseta básica', 'Camiseta de algodón 100%', 45000, idCategoria.Camisetas, ['Blanco', 'Negro']],
+      ['Sudadera con capucha', 'Sudadera de felpa', 120000, idCategoria.Sudaderas, ['Gris']],
+      ['Vaquero recto', 'Pantalón vaquero de corte recto', 135000, idCategoria.Pantalones, ['Azul']]
     ];
 
     for (const [nombre, descripcion, precio, categoriaId, colores] of productos) {
