@@ -18,8 +18,14 @@ async function initDB() {
       precio NUMERIC(10, 2) NOT NULL CHECK (precio >= 0),
       categoria_id INTEGER REFERENCES categorias(id) ON DELETE SET NULL,
       imagen_url TEXT,
+      -- 'personalizado': no se vende por carrito, se solicita y se cotiza por WhatsApp
+      tipo VARCHAR(20) NOT NULL DEFAULT 'estandar' CHECK (tipo IN ('estandar', 'personalizado')),
       created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
     );
+
+    -- Bases de datos creadas antes de añadir el tipo de producto
+    ALTER TABLE productos ADD COLUMN IF NOT EXISTS tipo VARCHAR(20) NOT NULL DEFAULT 'estandar'
+      CHECK (tipo IN ('estandar', 'personalizado'));
 
     -- El stock vive en la variante: una camiseta M roja y una L azul son artículos distintos.
     -- corte es opcional (estándar, oversize...) y precio, si se indica, sustituye al del producto.
@@ -64,6 +70,24 @@ async function initDB() {
       cantidad INTEGER NOT NULL CHECK (cantidad > 0),
       precio_unitario NUMERIC(10, 2) NOT NULL
     );
+
+    -- Pedidos personalizados: All Style contacta al cliente por WhatsApp para cotizar.
+    -- telefono en formato internacional (+573001234567). corte/talla/color copian la elección.
+    CREATE TABLE IF NOT EXISTS solicitudes_personalizado (
+      id SERIAL PRIMARY KEY,
+      nombre VARCHAR(100) NOT NULL,
+      telefono VARCHAR(20) NOT NULL,
+      producto_id INTEGER REFERENCES productos(id) ON DELETE SET NULL,
+      corte VARCHAR(30),
+      talla VARCHAR(10) NOT NULL,
+      color VARCHAR(50) NOT NULL,
+      cantidad INTEGER NOT NULL CHECK (cantidad > 0),
+      diseno VARCHAR(20) NOT NULL CHECK (diseno IN ('propio', 'crear')),
+      comentario TEXT NOT NULL DEFAULT '',
+      estado VARCHAR(20) NOT NULL DEFAULT 'pendiente'
+        CHECK (estado IN ('pendiente', 'contactado', 'cerrado')),
+      fecha TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    );
   `);
 
   const res = await pool.query('SELECT COUNT(*) FROM productos');
@@ -71,7 +95,7 @@ async function initDB() {
     console.log('Sembrando catálogo de prueba...');
 
     const categorias = await pool.query(`
-      INSERT INTO categorias (nombre) VALUES ('Camisetas'), ('Hoodies')
+      INSERT INTO categorias (nombre) VALUES ('Camisetas'), ('Hoodies'), ('Personalizados')
       RETURNING id, nombre
     `);
     const idCategoria = Object.fromEntries(categorias.rows.map((c) => [c.nombre, c.id]));
@@ -116,6 +140,13 @@ async function initDB() {
         }
       }
     }
+
+    // Sin variantes propias: sus opciones salen de las prendas estándar del catálogo
+    await pool.query(
+      `INSERT INTO productos (nombre, precio, categoria_id, tipo)
+       VALUES ('Personalizado', 0, $1, 'personalizado')`,
+      [idCategoria.Personalizados]
+    );
   }
 
   console.log('Base de datos inicializada correctamente.');
