@@ -1,0 +1,226 @@
+<a class="volver" routerLink="/">← Volver al catálogo</a>
+
+<article class="ficha">
+  <div class="imagen">
+    <span aria-hidden="true">✦</span>
+  </div>
+
+  <div class="detalle">
+    <span class="categoria">Personalizados</span>
+    <h1>Personalizado</h1>
+    <p class="lema">Tu diseño en nuestras prendas. Cotízalo directamente por WhatsApp.</p>
+
+    <ul class="ventajas">
+      <li>Pedidos para negocios, empresas y eventos.</li>
+      <li>Descuentos al comprar más de 5 unidades.</li>
+      <li>Envíanos tu diseño o te lo creamos nosotros.</li>
+    </ul>
+
+    <fieldset class="opcion">
+      <legend>Prenda</legend>
+      <div class="botones">
+        @for (p of prendas.value(); track p.id) {
+          <button
+            type="button"
+            class="chip"
+            [class.activo]="prendaId() === p.id"
+            [attr.aria-pressed]="prendaId() === p.id"
+            (click)="prendaId.set(p.id)"
+          >
+            {{ p.nombre }}
+          </button>
+        }
+      </div>
+    </fieldset>
+
+    @if (prenda.error() || prendas.error()) {
+      <p class="aviso error">No se pudieron cargar las opciones. ¿Está arrancado el servidor?</p>
+    } @else if (prenda.value()) {
+      @if (cortes().length > 0) {
+        <fieldset class="opcion">
+          <legend>Corte</legend>
+          <div class="botones">
+            @for (c of cortes(); track c) {
+              <button
+                type="button"
+                class="chip"
+                [class.activo]="corte() === c"
+                [attr.aria-pressed]="corte() === c"
+                (click)="corte.set(c)"
+              >
+                {{ c }}
+              </button>
+            }
+          </div>
+        </fieldset>
+      }
+
+      <fieldset class="opcion">
+        <legend>Talla</legend>
+        <div class="botones">
+          @for (t of tallas(); track t) {
+            <button
+              type="button"
+              class="chip talla"
+              [class.activo]="talla() === t"
+              [attr.aria-pressed]="talla() === t"
+              (click)="talla.set(t)"
+            >
+              {{ t }}
+            </button>
+          }
+        </div>
+      </fieldset>
+
+      <fieldset class="opcion">
+        <legend>
+          Color: <span class="elegido">{{ color() }}</span>
+        </legend>
+        <div class="botones">
+          @for (c of colores(); track c) {
+            <button
+              type="button"
+              class="muestra"
+              [class.activo]="color() === c"
+              [attr.aria-pressed]="color() === c"
+              [attr.aria-label]="c"
+              [attr.title]="c"
+              [style.background]="muestra(c)"
+              (click)="color.set(c)"
+            ></button>
+          }
+        </div>
+      </fieldset>
+
+      @if (precioBase(); as precio) {
+        <p class="precio-base">
+          Prenda base desde <strong>{{ precio | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</strong>
+          c/u. El precio final con tu diseño se acuerda por WhatsApp.
+        </p>
+      }
+    } @else {
+      <p class="aviso">Cargando opciones…</p>
+    }
+
+    <button type="button" class="anadir" [disabled]="!variante()" (click)="abrir()">
+      Solicitar personalizado
+    </button>
+    @if (!talla()) {
+      <p class="nota">Elige una talla para continuar.</p>
+    }
+  </div>
+</article>
+
+<dialog #dialogo class="dialogo" aria-labelledby="titulo-solicitud">
+  @if (enviadaA(); as telefono) {
+    <div class="confirmacion" role="status">
+      <span class="icono-ok" aria-hidden="true">✓</span>
+      <h2 id="titulo-solicitud">¡Solicitud enviada!</h2>
+      <p>
+        Te escribiremos por WhatsApp al <strong>{{ telefono }}</strong> para hablar de tu diseño,
+        cantidades y precio.
+      </p>
+      <button type="button" class="anadir" (click)="cerrar()">Entendido</button>
+    </div>
+  } @else {
+    <h2 id="titulo-solicitud">Solicita tu personalizado</h2>
+    <p class="eleccion">{{ resumen() }}</p>
+    <p class="explicacion">
+      Déjanos tu número y te contactamos por WhatsApp para cotizar tu pedido.
+    </p>
+
+    <form [formGroup]="formulario" (ngSubmit)="enviar()" novalidate>
+      <label class="campo">
+        <span>Nombre</span>
+        <input type="text" formControlName="nombre" autocomplete="name" maxlength="100" />
+        @if (campoInvalido('nombre')) {
+          <span class="error-campo">Escribe tu nombre.</span>
+        }
+      </label>
+
+      <div class="campo">
+        <label for="telefono">Número de WhatsApp</label>
+        <div class="telefono">
+          <select formControlName="prefijo" aria-label="Prefijo del país">
+            @for (p of prefijos; track p.codigo) {
+              <option [value]="p.codigo" [attr.title]="p.nombre">{{ p.pais }} {{ p.codigo }}</option>
+            }
+          </select>
+          <input
+            id="telefono"
+            type="tel"
+            formControlName="telefono"
+            [class.invalido]="telefonoInvalido()"
+            inputmode="numeric"
+            autocomplete="tel-national"
+            placeholder="300 123 4567"
+          />
+        </div>
+        @if (telefonoInvalido()) {
+          <span class="error-campo">
+            @if (formulario.controls.prefijo.value === '+57') {
+              Escribe un celular colombiano de 10 dígitos (empieza por 3).
+            } @else {
+              Escribe un número de teléfono válido.
+            }
+          </span>
+        }
+      </div>
+
+      <label class="campo">
+        <span>Cantidad</span>
+        <input type="number" formControlName="cantidad" min="1" max="1000" />
+        @if (campoInvalido('cantidad')) {
+          <span class="error-campo">Indica una cantidad entre 1 y 1.000.</span>
+        } @else if (cantidad() > 5) {
+          <span class="ayuda">¡Con más de 5 unidades puedes acceder a descuentos!</span>
+        }
+      </label>
+
+      <fieldset class="campo">
+        <legend>Diseño</legend>
+        <label class="radio">
+          <input type="radio" formControlName="diseno" value="propio" />
+          Tengo mi diseño y quiero que lo impriman
+        </label>
+        <label class="radio">
+          <input type="radio" formControlName="diseno" value="crear" />
+          Necesito que All Style me cree el diseño
+        </label>
+        @if (campoInvalido('diseno')) {
+          <span class="error-campo">Elige una opción.</span>
+        }
+      </fieldset>
+
+      <label class="campo">
+        <span>Comentarios <small>(opcional)</small></span>
+        <textarea
+          formControlName="comentario"
+          rows="3"
+          maxlength="500"
+          placeholder="Ej.: logo de mi negocio en el pecho, 20 camisetas para el equipo…"
+        ></textarea>
+      </label>
+
+      <label class="radio autorizacion">
+        <input type="checkbox" formControlName="autorizacion" />
+        Autorizo a All Style a contactarme por WhatsApp y a tratar mis datos solo para gestionar
+        esta solicitud.
+      </label>
+      @if (campoInvalido('autorizacion')) {
+        <span class="error-campo">Necesitamos tu autorización para poder contactarte.</span>
+      }
+
+      @if (error()) {
+        <p class="error-envio" role="alert">{{ error() }}</p>
+      }
+
+      <div class="acciones">
+        <button type="button" class="secundario" (click)="cerrar()">Cancelar</button>
+        <button type="submit" class="anadir" [disabled]="enviando()">
+          {{ enviando() ? 'Enviando…' : 'Enviar solicitud' }}
+        </button>
+      </div>
+    </form>
+  }
+</dialog>

@@ -41,7 +41,11 @@
     <ul class="rejilla" [class.recargando]="productos.isLoading()">
       @for (p of productos.value(); track p.id) {
         <li>
-          <a class="tarjeta" [routerLink]="['/producto', p.id]">
+          <a
+            class="tarjeta"
+            [class.personalizado]="p.tipo === 'personalizado'"
+            [routerLink]="p.tipo === 'personalizado' ? '/personalizado' : ['/producto', p.id]"
+          >
             <div class="imagen">
               @if (p.imagen_url) {
                 <img [src]="p.imagen_url" [alt]="p.nombre" />
@@ -57,12 +61,16 @@
               @if (p.descripcion) {
                 <p class="descripcion">{{ p.descripcion }}</p>
               }
-              <p class="precio">
-                @if (p.precio_min < p.precio_max) {
-                  <span class="desde">Desde</span>
-                }
-                {{ p.precio_min | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}
-              </p>
+              @if (p.tipo === 'personalizado') {
+                <p class="precio cotizar">Cotiza por WhatsApp</p>
+              } @else {
+                <p class="precio">
+                  @if (p.precio_min < p.precio_max) {
+                    <span class="desde">Desde</span>
+                  }
+                  {{ p.precio_min | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}
+                </p>
+              }
             </div>
           </a>
         </li>

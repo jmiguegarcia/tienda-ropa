@@ -181,6 +181,18 @@ h3 {
   font-weight: 700;
 }
 
+.cotizar {
+  color: var(--marca-fuerte);
+  font-size: 1rem;
+}
+
+.personalizado .imagen {
+  background:
+    radial-gradient(circle at 70% 30%, rgb(155 111 224 / 0.6), transparent 55%),
+    var(--noche);
+  color: var(--marca);
+}
+
 .desde {
   color: var(--texto-suave);
   font-size: 0.8rem;

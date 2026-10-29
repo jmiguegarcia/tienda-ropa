@@ -14,6 +14,8 @@ export interface Producto {
   categoria_id: number | null;
   categoria: string | null;
   imagen_url: string | null;
+  // 'personalizado' no se compra por carrito: se solicita y se cotiza por WhatsApp
+  tipo: 'estandar' | 'personalizado';
 }
 
 export interface Variante {

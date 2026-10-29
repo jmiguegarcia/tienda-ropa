@@ -1,17 +1,10 @@
 import { CurrencyPipe } from '@angular/common';
-import { Component, computed, inject, input, linkedSignal, numberAttribute } from '@angular/core';
+import { Component, computed, effect, inject, input, linkedSignal, numberAttribute } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { CarritoService } from '../carrito/carrito.service';
 import { ProductosService } from '../productos/productos.service';
-
-// Color de la muestra para cada nombre de color
-const MUESTRAS: Record<string, string> = {
-  Blanco: '#ffffff',
-  Negro: '#111111',
-};
-
-const unicos = <T>(valores: T[]) => [...new Set(valores)];
+import { muestraDeColor, seleccionDeVariantes } from '../productos/seleccion-variante';
 
 @Component({
   selector: 'app-ficha-producto',
@@ -22,6 +15,7 @@ const unicos = <T>(valores: T[]) => [...new Set(valores)];
 export class FichaProducto {
   private readonly productosService = inject(ProductosService);
   private readonly carrito = inject(CarritoService);
+  private readonly router = inject(Router);
 
   // Se rellena desde la ruta producto/:id gracias a withComponentInputBinding()
   readonly id = input.required({ transform: numberAttribute });
@@ -31,33 +25,22 @@ export class FichaProducto {
     stream: ({ params }) => this.productosService.obtenerProducto(params.id),
   });
 
-  private readonly variantes = computed(() => this.producto.value()?.variantes ?? []);
-
-  protected readonly cortes = computed(() =>
-    unicos(this.variantes().flatMap((v) => (v.corte ? [v.corte] : []))),
-  );
-  protected readonly tallas = computed(() => unicos(this.variantes().map((v) => v.talla)));
-  protected readonly colores = computed(() => unicos(this.variantes().map((v) => v.color)));
-
-  // La selección se reinicia al cargar otro producto; la talla la elige siempre el cliente
-  protected readonly corte = linkedSignal(() => this.cortes()[0] ?? null);
-  protected readonly color = linkedSignal(() => this.colores()[0] ?? null);
-  protected readonly talla = linkedSignal<unknown, string | null>({
-    source: this.variantes,
-    computation: () => null,
-  });
-
-  private readonly delCorteYColor = computed(() =>
-    this.variantes().filter((v) => v.corte === this.corte() && v.color === this.color()),
+  private readonly seleccion = seleccionDeVariantes(
+    computed(() => this.producto.value()?.variantes ?? []),
   );
 
-  protected readonly variante = computed(() =>
-    this.delCorteYColor().find((v) => v.talla === this.talla()),
-  );
+  protected readonly cortes = this.seleccion.cortes;
+  protected readonly tallas = this.seleccion.tallas;
+  protected readonly colores = this.seleccion.colores;
+  protected readonly corte = this.seleccion.corte;
+  protected readonly talla = this.seleccion.talla;
+  protected readonly color = this.seleccion.color;
+  protected readonly variante = this.seleccion.variante;
+  protected readonly agotada = this.seleccion.agotada;
+  protected readonly muestra = muestraDeColor;
 
-  // El precio depende del corte, no de la talla ni del color
   protected readonly precio = computed(
-    () => this.delCorteYColor()[0]?.precio ?? this.producto.value()?.precio ?? 0,
+    () => this.seleccion.precio() ?? this.producto.value()?.precio ?? 0,
   );
 
   protected readonly puedeAnadir = computed(() => (this.variante()?.stock ?? 0) > 0);
@@ -67,13 +50,13 @@ export class FichaProducto {
     computation: () => null,
   });
 
-  protected agotada(talla: string) {
-    const variante = this.delCorteYColor().find((v) => v.talla === talla);
-    return !variante || variante.stock === 0;
-  }
-
-  protected muestra(color: string) {
-    return MUESTRAS[color] ?? 'var(--borde)';
+  constructor() {
+    // El producto personalizado tiene su propia página
+    effect(() => {
+      if (this.producto.value()?.tipo === 'personalizado') {
+        this.router.navigate(['/personalizado'], { replaceUrl: true });
+      }
+    });
   }
 
   protected anadirAlCarrito() {
