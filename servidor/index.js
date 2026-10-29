@@ -6,6 +6,7 @@ const initDB = require('./init-db');
 
 const productosRutas = require('./rutas/productos');
 const categoriasRutas = require('./rutas/categorias');
+const solicitudesRutas = require('./rutas/solicitudes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -16,6 +17,7 @@ app.use(express.json());
 // Montar rutas
 app.use('/api/productos', productosRutas);
 app.use('/api/categorias', categoriasRutas);
+app.use('/api/solicitudes', solicitudesRutas);
 
 // Ruta base informativa
 app.get('/api', (req, res) => {
