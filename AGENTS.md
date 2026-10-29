@@ -1,6 +1,6 @@
 # Tienda Ropa
 
-Tienda online de camisetas y ropa en general.
+Tienda online de camisetas y ropa en general para **All Style** (Cartago, Valle, Colombia). La estética toma como referencia su Instagram (@allstyle.dr): lavanda como color de marca y azul noche para contraste.
 
 ## Estructura
 
@@ -41,6 +41,7 @@ Reglas:
 
 - El stock pertenece a la **variante** (talla × color), no al producto.
 - `pedido_items.precio_unitario` guarda el precio del momento de la compra.
+- Los precios están en **pesos colombianos (COP)**, sin decimales en pantalla (`$ 45.000`).
 - Las operaciones que descuentan stock deben ir en una transacción.
 
 ## Notas

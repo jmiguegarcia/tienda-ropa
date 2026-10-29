@@ -1,5 +1,17 @@
+<!-- La portada solo se muestra en la página principal, no al filtrar por categoría -->
+@if (!categoria()) {
+  <section class="portada">
+    <p class="antetitulo">Nueva colección</p>
+    <h1>Camisetas con estilo propio</h1>
+    <p class="lema">Estampadas, personalizadas y para empresas.</p>
+    <span class="estrella e1" aria-hidden="true">✦</span>
+    <span class="estrella e2" aria-hidden="true">✦</span>
+    <span class="estrella e3" aria-hidden="true">✧</span>
+  </section>
+}
+
 <section class="catalogo">
-  <h1>Catálogo</h1>
+  <h2>Catálogo</h2>
 
   <nav class="filtros" aria-label="Filtrar por categoría">
     <a
@@ -40,9 +52,9 @@
             @if (p.categoria) {
               <span class="categoria">{{ p.categoria }}</span>
             }
-            <h2>{{ p.nombre }}</h2>
+            <h3>{{ p.nombre }}</h3>
             <p class="descripcion">{{ p.descripcion }}</p>
-            <p class="precio">{{ p.precio | currency: 'EUR' }}</p>
+            <p class="precio">{{ p.precio | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</p>
           </div>
         </li>
       } @empty {
