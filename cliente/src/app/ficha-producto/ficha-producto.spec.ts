@@ -5,6 +5,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { registerLocaleData } from '@angular/common';
 import localeEsCo from '@angular/common/locales/es-CO';
+import { CarritoService } from '../carrito/carrito.service';
 import { FichaProducto } from './ficha-producto';
 
 registerLocaleData(localeEsCo);
@@ -74,5 +75,21 @@ describe('FichaProducto', () => {
     boton(el, 'S').click();
     TestBed.tick();
     expect(boton(el, 'Añadir al carrito').disabled).toBe(false);
+  });
+
+  it('añade al carrito la variante elegida con el precio de su corte', async () => {
+    localStorage.clear();
+    const el = await crearFicha();
+    // En Estándar la M está agotada: hay que refrescar la vista tras cambiar de corte
+    boton(el, 'Oversize').click();
+    TestBed.tick();
+    boton(el, 'M').click();
+    TestBed.tick();
+    boton(el, 'Añadir al carrito').click();
+    TestBed.tick();
+
+    const [linea] = TestBed.inject(CarritoService).lineas();
+    expect(linea).toMatchObject({ varianteId: 4, corte: 'Oversize', talla: 'M', precio: 60000 });
+    expect(el.querySelector('.nota')?.textContent).toContain('Añadido al carrito');
   });
 });

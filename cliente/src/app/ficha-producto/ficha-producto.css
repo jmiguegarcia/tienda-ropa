@@ -180,6 +180,11 @@ button:focus-visible {
   font-size: 0.9rem;
 }
 
+.ver-carrito {
+  color: var(--marca-fuerte);
+  font-weight: 700;
+}
+
 .aviso {
   color: var(--texto-suave);
 }

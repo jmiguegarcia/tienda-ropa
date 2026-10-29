@@ -86,7 +86,9 @@
       </button>
 
       @if (aviso()) {
-        <p class="nota" role="status">{{ aviso() }}</p>
+        <p class="nota" role="status">
+          {{ aviso() }} <a class="ver-carrito" routerLink="/carrito">Ver carrito</a>
+        </p>
       } @else if (!talla()) {
         <p class="nota">Elige una talla para continuar.</p>
       }

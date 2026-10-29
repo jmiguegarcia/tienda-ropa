@@ -2,6 +2,7 @@ import { CurrencyPipe } from '@angular/common';
 import { Component, computed, inject, input, linkedSignal, numberAttribute } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
+import { CarritoService } from '../carrito/carrito.service';
 import { ProductosService } from '../productos/productos.service';
 
 // Color de la muestra para cada nombre de color
@@ -20,6 +21,7 @@ const unicos = <T>(valores: T[]) => [...new Set(valores)];
 })
 export class FichaProducto {
   private readonly productosService = inject(ProductosService);
+  private readonly carrito = inject(CarritoService);
 
   // Se rellena desde la ruta producto/:id gracias a withComponentInputBinding()
   readonly id = input.required({ transform: numberAttribute });
@@ -75,7 +77,15 @@ export class FichaProducto {
   }
 
   protected anadirAlCarrito() {
-    // TODO: conectar con el carrito cuando exista
-    this.aviso.set('El carrito estará disponible muy pronto.');
+    const producto = this.producto.value();
+    const variante = this.variante();
+    if (!producto || !variante) {
+      return;
+    }
+    this.aviso.set(
+      this.carrito.anadir(producto, variante)
+        ? 'Añadido al carrito.'
+        : 'Ya tienes en el carrito todas las unidades disponibles.',
+    );
   }
 }
