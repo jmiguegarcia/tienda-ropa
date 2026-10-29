@@ -1,0 +1,8 @@
+node_modules/
+.angular/
+dist/
+*.log
+
+# Secretos (nunca subirlos a git)
+.env
+!servidor/.env.example
