@@ -21,15 +21,22 @@ async function initDB() {
       created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
     );
 
-    -- El stock vive en la variante: una camiseta M roja y una L azul son artículos distintos
+    -- El stock vive en la variante: una camiseta M roja y una L azul son artículos distintos.
+    -- corte es opcional (estándar, oversize...) y precio, si se indica, sustituye al del producto.
     CREATE TABLE IF NOT EXISTS variantes (
       id SERIAL PRIMARY KEY,
       producto_id INTEGER NOT NULL REFERENCES productos(id) ON DELETE CASCADE,
+      corte VARCHAR(30),
       talla VARCHAR(10) NOT NULL,
       color VARCHAR(50) NOT NULL,
       stock INTEGER NOT NULL DEFAULT 0 CHECK (stock >= 0),
-      sku VARCHAR(50) UNIQUE NOT NULL
+      sku VARCHAR(50) UNIQUE NOT NULL,
+      precio NUMERIC(10, 2) CHECK (precio >= 0)
     );
+
+    -- Bases de datos creadas antes de añadir corte y precio a las variantes
+    ALTER TABLE variantes ADD COLUMN IF NOT EXISTS corte VARCHAR(30);
+    ALTER TABLE variantes ADD COLUMN IF NOT EXISTS precio NUMERIC(10, 2) CHECK (precio >= 0);
 
     CREATE TABLE IF NOT EXISTS usuarios (
       id SERIAL PRIMARY KEY,
@@ -64,30 +71,48 @@ async function initDB() {
     console.log('Sembrando catálogo de prueba...');
 
     const categorias = await pool.query(`
-      INSERT INTO categorias (nombre) VALUES ('Camisetas'), ('Sudaderas'), ('Pantalones')
+      INSERT INTO categorias (nombre) VALUES ('Camisetas'), ('Hoodies')
       RETURNING id, nombre
     `);
     const idCategoria = Object.fromEntries(categorias.rows.map((c) => [c.nombre, c.id]));
 
+    const tallas = ['S', 'M', 'L', 'XL'];
+    const colores = ['Blanco', 'Negro'];
+
+    // precio del producto = precio base ("desde"); cada corte puede tener el suyo
     const productos = [
-      ['Camiseta básica', 'Camiseta de algodón 100%', 45000, idCategoria.Camisetas, ['Blanco', 'Negro']],
-      ['Sudadera con capucha', 'Sudadera de felpa', 120000, idCategoria.Sudaderas, ['Gris']],
-      ['Vaquero recto', 'Pantalón vaquero de corte recto', 135000, idCategoria.Pantalones, ['Azul']]
+      {
+        nombre: 'Camiseta',
+        precio: 45000,
+        categoriaId: idCategoria.Camisetas,
+        cortes: [
+          ['Estándar', 45000],
+          ['Semi-oversize', 50000],
+          ['Oversize', 60000]
+        ]
+      },
+      { nombre: 'Hoodie', precio: 130000, categoriaId: idCategoria.Hoodies, cortes: [[null, null]] }
     ];
 
-    for (const [nombre, descripcion, precio, categoriaId, colores] of productos) {
+    for (const { nombre, precio, categoriaId, cortes } of productos) {
       const producto = await pool.query(
-        'INSERT INTO productos (nombre, descripcion, precio, categoria_id) VALUES ($1, $2, $3, $4) RETURNING id',
-        [nombre, descripcion, precio, categoriaId]
+        'INSERT INTO productos (nombre, precio, categoria_id) VALUES ($1, $2, $3) RETURNING id',
+        [nombre, precio, categoriaId]
       );
       const productoId = producto.rows[0].id;
 
-      for (const color of colores) {
-        for (const talla of ['S', 'M', 'L', 'XL']) {
-          await pool.query(
-            'INSERT INTO variantes (producto_id, talla, color, stock, sku) VALUES ($1, $2, $3, $4, $5)',
-            [productoId, talla, color, 10, `P${productoId}-${color.slice(0, 3).toUpperCase()}-${talla}`]
-          );
+      for (const [corte, precioCorte] of cortes) {
+        for (const color of colores) {
+          for (const talla of tallas) {
+            const sku = [`P${productoId}`, corte, color, talla]
+              .filter(Boolean)
+              .map((parte) => parte.normalize('NFD').replace(/[^\w]/g, '').slice(0, 4).toUpperCase())
+              .join('-');
+            await pool.query(
+              'INSERT INTO variantes (producto_id, corte, talla, color, stock, sku, precio) VALUES ($1, $2, $3, $4, $5, $6, $7)',
+              [productoId, corte, talla, color, 10, sku, precioCorte]
+            );
+          }
         }
       }
     }
