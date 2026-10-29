@@ -1,10 +1,18 @@
 :root {
-  --fondo: #f7f7f5;
+  /* Paleta: lavanda como color de marca y azul noche para contraste */
+  --fondo: #f7f4fc;
   --superficie: #ffffff;
-  --texto: #1c1c1c;
-  --texto-suave: #6b6b6b;
-  --borde: #e4e4e0;
+  --texto: #1d1a33;
+  --texto-suave: #6b6582;
+  --borde: #e7e0f3;
+  --marca: #9b6fe0;
+  --marca-fuerte: #6a43b8;
+  --marca-suave: #efe7fc;
+  --noche: #1d1a33;
   --error: #b42318;
+
+  --fuente-titulos: 'Playfair Display', Georgia, serif;
+  --fuente-texto: 'Nunito', system-ui, -apple-system, 'Segoe UI', sans-serif;
 
   color-scheme: light;
 }
@@ -19,11 +27,18 @@ body {
   margin: 0;
   background: var(--fondo);
   color: var(--texto);
-  font-family:
-    system-ui,
-    -apple-system,
-    'Segoe UI',
-    Roboto,
-    sans-serif;
+  font-family: var(--fuente-texto);
   line-height: 1.5;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--fuente-titulos);
+  line-height: 1.2;
+}
+
+a:focus-visible {
+  outline: 2px solid var(--marca);
+  outline-offset: 2px;
 }
