@@ -51,6 +51,7 @@ Reglas:
 - Angular 22 usa standalone components.
 - Los componentes deben usar `inject()` en lugar de constructor injection.
 - En Angular 22 se busca usar signals para estado reactivo (por ejemplo, el carrito).
+- El carrito (`CarritoService`) vive en el navegador (`localStorage`, clave `all-style:carrito`) y guarda por línea el `variante_id`, el precio y el stock del momento en que se añadió. Al crear un pedido, el servidor debe volver a comprobar precio y stock.
 
 ## Flujo de Commits y Git
 
