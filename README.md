@@ -47,6 +47,7 @@ Abre `http://localhost:4200`.
 | ------ | --------------------- | -------------------------------------------------- |
 | GET    | `/api/productos`      | Lista productos (filtro opcional `?categoria=<id>`) |
 | GET    | `/api/productos/:id`  | Producto con sus variantes (talla, color, stock)   |
+| GET    | `/api/categorias`     | Lista de categorías                                |
 
 ## Hoja de ruta
 

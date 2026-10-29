@@ -26,6 +26,7 @@ npm run init-db    # solo inicializa la BD
 
 - `GET /api/productos`: lista productos (filtro opcional `?categoria=<id>`)
 - `GET /api/productos/:id`: obtiene un producto con sus variantes
+- `GET /api/categorias`: lista categorías
 
 ## Modelo de datos
 
@@ -50,7 +51,7 @@ Reglas:
 
 ## Flujo de Commits y Git
 
-- Cuando el usuario diga **"estoy listo para hacer commit y push"**, el asistente debe:
+- Cuando el usuario escriba **`/git-commit`** o diga **"estoy listo para hacer commit y push"**, el asistente debe seguir la skill [`.claude/skills/git-commit/SKILL.md`](.claude/skills/git-commit/SKILL.md):
   - Analizar los ficheros que están en los cambios (`changes` / git status).
   - Generar un plan de commits para subir los cambios de manera ordenada utilizando **Conventional Commits**.
   - Entregar **únicamente el plan en el chat** con los comandos exactos (`git add` y `git commit -m "..."`).
